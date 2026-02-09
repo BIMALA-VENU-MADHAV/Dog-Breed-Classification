@@ -244,49 +244,60 @@ function showToast(message, type = 'success') {
 
 // Submit form
 form.addEventListener('submit', async (e) => {
-    e.preventDefault();
-    if (!selectedImageData) return;
+  e.preventDefault();
 
-    loader.style.display = 'block';
-    resultText.innerHTML = '';
-    resultArea.style.display = 'block';
-    
-    try {
-        const response = await fetch('/predict', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({
-                image: selectedImageData
-            })
-        });
+  if (!selectedImageData) {
+    showToast("Please select an image first", "error");
+    return;
+  }
 
-        const data = await response.json();
-        loader.style.display = 'none';
+  loader.style.display = 'block';
+  resultText.innerHTML = '';
+  resultArea.style.display = 'block';
 
-        if (data.error) {
-            resultText.innerHTML = `<strong>Error:</strong> ${data.error}`;
-            showToast(data.error, 'error');
-        } else {
-            resultText.innerHTML = `
-                <div class="prediction-result">
-                    <div class="breed-name">${data.breed}</div>
-                    <div class="confidence-score">
-                        <div class="confidence-bar" style="width: ${data.confidence}%"></div>
-                        <span>${data.confidence}% confident</span>
-                    </div>
-                </div>
-            `;
-            savePrediction(selectedImageData, data.breed, data.confidence);
-            showToast("Prediction complete!");
-        }
-    } catch (error) {
-        loader.style.display = 'none';
-        resultText.innerHTML = `<strong>Error:</strong> ${error.message}`;
-        showToast(error.message, 'error');
+  try {
+    const response = await fetch('/predict', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        image: selectedImageData
+      })
+    });
+
+    const data = await response.json();
+    loader.style.display = 'none';
+
+
+    if (!response.ok) {
+      const errorMsg = data.error || "Prediction failed";
+      resultText.innerHTML = `<strong>Error:</strong> ${errorMsg}`;
+      showToast(errorMsg, 'error');
+      return;
     }
+
+
+    resultText.innerHTML = `
+      <div class="prediction-result">
+        <div class="breed-name">${data.breed}</div>
+        <div class="confidence-score">
+          <div class="confidence-bar" style="width: ${data.confidence}%"></div>
+          <span>${data.confidence}% confident</span>
+        </div>
+      </div>
+    `;
+
+    savePrediction(selectedImageData, data.breed, data.confidence);
+    showToast("Prediction complete!");
+
+  } catch (error) {
+    loader.style.display = 'none';
+    resultText.innerHTML = `<strong>Error:</strong> ${error.message}`;
+    showToast(error.message, 'error');
+  }
 });
+
 
 // Reset form
 resetBtn.addEventListener('click', resetPreview);
