@@ -32,7 +32,7 @@ let db;
 
 const initDB = () => {
     const request = indexedDB.open(dbName, 1);
-    
+
     request.onerror = (event) => {
         console.error('IndexedDB error:', event.target.error);
     };
@@ -126,19 +126,19 @@ const showUploadProgress = () => {
     circularProgress.style.display = 'block';
     uploadPercentage.style.display = 'block';
     dropArea.classList.add('uploading');
-    
+
     let progress = 0;
     const interval = setInterval(() => {
         progress += 2;
         updateProgress(progress);
-        
+
         if (progress >= 100) {
             clearInterval(interval);
             setTimeout(() => {
                 uploadPercentage.style.opacity = '0';
                 circularProgress.classList.add('done');
                 uploadStatus.textContent = 'Upload complete!';
-                
+
                 setTimeout(() => {
                     uploadOverlay.style.display = 'none';
                     circularProgress.style.display = 'none';
@@ -203,32 +203,32 @@ removeImageBtn.addEventListener('click', (e) => {
 
 // Click to upload
 dropArea.addEventListener('click', (e) => {
-  // prevent reopening picker when clicking remove button or preview
-  if (e.target.closest('#remove-image-btn')) return;
-  fileInput.click();
+    // prevent reopening picker when clicking remove button or preview
+    if (e.target.closest('#remove-image-btn')) return;
+    fileInput.click();
 });
 
 // Drag & Drop
 ['dragenter', 'dragover'].forEach(event => {
-  dropArea.addEventListener(event, (e) => {
-    e.preventDefault();
-    dropArea.classList.add('drag-active');
-  });
+    dropArea.addEventListener(event, (e) => {
+        e.preventDefault();
+        dropArea.classList.add('drag-active');
+    });
 });
 
 ['dragleave', 'drop'].forEach(event => {
-  dropArea.addEventListener(event, (e) => {
-    e.preventDefault();
-    dropArea.classList.remove('drag-active');
-  });
+    dropArea.addEventListener(event, (e) => {
+        e.preventDefault();
+        dropArea.classList.remove('drag-active');
+    });
 });
 
 dropArea.addEventListener('drop', (e) => {
-  e.preventDefault();
-  if (e.dataTransfer.files.length) {
-    fileInput.files = e.dataTransfer.files;
-    fileInput.dispatchEvent(new Event('change'));
-  }
+    e.preventDefault();
+    if (e.dataTransfer.files.length) {
+        fileInput.files = e.dataTransfer.files;
+        fileInput.dispatchEvent(new Event('change'));
+    }
 });
 
 
@@ -246,8 +246,11 @@ function showToast(message, type = 'success') {
 form.addEventListener('submit', async (e) => {
   e.preventDefault();
 
-  if (!selectedImageData) {
-    showToast("Please select an image first", "error");
+  if (
+    !selectedImageData ||
+    !selectedImageData.startsWith("data:image")
+  ) {
+    showToast("Please upload a valid image", "error");
     return;
   }
 
@@ -266,9 +269,18 @@ form.addEventListener('submit', async (e) => {
       })
     });
 
-    const data = await response.json();
-    loader.style.display = 'none';
+    let data = {};
+    const text = await response.text();
 
+    if (text) {
+      try {
+        data = JSON.parse(text);
+      } catch {
+        throw new Error("Server returned invalid JSON");
+      }
+    }
+
+    loader.style.display = 'none';
 
     if (!response.ok) {
       const errorMsg = data.error || "Prediction failed";
@@ -276,7 +288,6 @@ form.addEventListener('submit', async (e) => {
       showToast(errorMsg, 'error');
       return;
     }
-
 
     resultText.innerHTML = `
       <div class="prediction-result">
@@ -299,6 +310,7 @@ form.addEventListener('submit', async (e) => {
 });
 
 
+
 // Reset form
 resetBtn.addEventListener('click', resetPreview);
 
@@ -307,12 +319,12 @@ const loadRecentPredictions = () => {
     const transaction = db.transaction([storeName], 'readonly');
     const store = transaction.objectStore(storeName);
     const index = store.index('timestamp');
-    
+
     const request = index.openCursor(null, 'prev');
     let count = 0;
-    
+
     recentPredictions.innerHTML = '';
-    
+
     request.onsuccess = (event) => {
         const cursor = event.target.result;
         if (cursor && count < 5) {
@@ -367,14 +379,14 @@ const loadRecentPredictions = () => {
 const savePrediction = (imageData, breed, confidence) => {
     const transaction = db.transaction([storeName], 'readwrite');
     const store = transaction.objectStore(storeName);
-    
+
     const prediction = {
         imageData,
         breed,
         confidence,
         timestamp: new Date().getTime()
     };
-    
+
     store.add(prediction).onsuccess = () => {
         loadRecentPredictions();
     };
