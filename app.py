@@ -64,9 +64,13 @@ def predict_breed(image):
         raise
 
 # === ROUTES === #
-@app.route('/')
+@app.route("/")
 def home():
-    return render_template('index.html')
+    return render_template("home.html")
+
+@app.route("/index")
+def index():
+    return render_template("index.html")
 
 @app.route('/predict', methods=['POST'])
 def predict():

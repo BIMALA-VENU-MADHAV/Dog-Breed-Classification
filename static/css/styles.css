@@ -109,6 +109,203 @@
   box-shadow: 0 2px 8px var(--shadow-color);
 }
 
+#theme-toggle {
+  background: var(--card-bg);
+  border: none;
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  cursor: pointer;
+  box-shadow: 0 6px 15px var(--shadow-color);
+  color: var(--primary-color);
+  font-size: 1.1rem;
+  transition: background 0.3s ease, transform 0.2s ease;
+}
+
+#theme-toggle:hover {
+  transform: scale(1.08);
+}
+
+.home-btn {
+  display: inline-block;
+  margin-top: 30px;
+  padding: 14px 32px;
+  background-color: var(--primary-color);
+  color: var(--btn-primary-text);
+  font-size: 1rem;
+  font-weight: 600;
+  text-decoration: none;
+  border-radius: 8px;
+  box-shadow: 0 4px 10px var(--shadow-color);
+  transition: background-color 0.3s ease, transform 0.2s ease;
+}
+
+.home-btn:hover {
+  background-color: var(--primary-dark);
+  transform: translateY(-2px);
+}
+
+.glass {
+  background: rgba(255, 255, 255, 0.15);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  border-radius: 20px;
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
+}
+
+
+/* ===============================
+   Hero Landing Page
+================================ */
+html, body {
+  height: 100%;
+  overflow: hidden;
+}
+
+.hero {
+  min-height: 100vh;
+  height: 100vh;    
+  max-height: 100vh;
+  padding: 1.5rem;  
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  z-index: 1;
+  background: linear-gradient(
+    135deg,
+    var(--bg-color),
+    rgba(108, 99, 255, 0.12)
+  );
+  position: relative;
+  overflow: hidden;
+  padding: 2rem;
+}
+
+.hero-card {
+  text-align: center;
+  padding: 3.5rem 3rem;
+  max-width: 600px;
+  width: 100%;
+  animation: fadeUp 1.2s ease forwards;
+}
+
+.hero-title {
+  font-size: 3rem;
+  font-weight: 700;
+  color: var(--text-color);
+  margin-bottom: 1rem;
+}
+
+.hero-subtitle {
+  font-size: 1.1rem;
+  color: var(--prediction-subtext);
+  margin-bottom: 2.5rem;
+  line-height: 1.6;
+}
+
+@media (max-height: 700px) {
+  .hero-card {
+    padding: 2.2rem 2rem;
+  }
+}
+
+@keyframes fadeUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.hero-btn {
+  position: relative;
+  overflow: hidden;
+  display: inline-block;
+  padding: 16px 42px;
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: var(--btn-primary-text);
+  background-color: var(--primary-color);
+  border-radius: 50px;
+  text-decoration: none;
+  box-shadow: 0 12px 30px rgba(108, 99, 255, 0.35);
+  transition: transform 0.25s ease, box-shadow 0.25s ease;
+}
+
+.hero-btn:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 16px 35px rgba(108, 99, 255, 0.45);
+}
+
+.hero-btn::after {
+  content: "";
+  position: absolute;
+  background: rgba(255, 255, 255, 0.5);
+  width: 0;
+  height: 0;
+  border-radius: 50%;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  opacity: 0;
+}
+
+.hero-btn:active::after {
+  width: 300px;
+  height: 300px;
+  opacity: 0;
+  transition: width 0.6s ease, height 0.6s ease, opacity 0.6s ease;
+}
+
+.paws-bg {
+  position: fixed;
+  inset: 0;
+  overflow: hidden;
+  pointer-events: none;
+  z-index: 0;
+}
+
+.paws-bg span {
+  position: absolute;
+  font-size: 2rem;
+  opacity: 0.15;
+  animation: floatPaw 18s linear infinite;
+}
+
+.paws-bg span:nth-child(1) { left: 10%; animation-delay: 0s; }
+.paws-bg span:nth-child(2) { left: 30%; animation-delay: 4s; }
+.paws-bg span:nth-child(3) { left: 50%; animation-delay: 8s; }
+.paws-bg span:nth-child(4) { left: 70%; animation-delay: 2s; }
+.paws-bg span:nth-child(5) { left: 85%; animation-delay: 6s; }
+.paws-bg span:nth-child(6) { left: 95%; animation-delay: 10s; }
+
+@keyframes floatPaw {
+  from {
+    transform: translateY(110vh) rotate(0deg);
+  }
+  to {
+    transform: translateY(-10vh) rotate(360deg);
+  }
+}
+
+
+@media (max-width: 600px) {
+  .hero-title {
+    font-size: 2.2rem;
+  }
+
+  .hero-card {
+    padding: 2.5rem 2rem;
+  }
+}
+
+
+
 /* Signature */
 .signature {
   position: fixed;

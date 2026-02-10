@@ -74,26 +74,38 @@ clearHistoryBtn.addEventListener('click', () => {
 });
 
 // Theme switcher
-const themeToggle = document.getElementById('theme-toggle');
-const html = document.documentElement;
-const themeIcon = themeToggle.querySelector('i');
+// Theme switcher (shared across pages)
+document.addEventListener('DOMContentLoaded', () => {
+    const themeToggle = document.getElementById('theme-toggle');
+    const html = document.documentElement;
+    const themeIcon = themeToggle?.querySelector('i');
 
-// Check for saved theme preference
-const savedTheme = localStorage.getItem('theme') || 'light';
-html.dataset.theme = savedTheme;
-updateThemeIcon(savedTheme);
+    // Apply saved theme on load
+    const savedTheme = localStorage.getItem('theme') || 'light';
+    html.dataset.theme = savedTheme;
 
-// Theme toggle handler
-themeToggle.addEventListener('click', () => {
-    const newTheme = html.dataset.theme === 'light' ? 'dark' : 'light';
-    html.dataset.theme = newTheme;
-    localStorage.setItem('theme', newTheme);
-    updateThemeIcon(newTheme);
+    if (themeIcon) {
+        updateThemeIcon(savedTheme);
+    }
+
+    // Toggle handler
+    if (themeToggle) {
+        themeToggle.addEventListener('click', () => {
+            const newTheme = html.dataset.theme === 'light' ? 'dark' : 'light';
+            html.dataset.theme = newTheme;
+            localStorage.setItem('theme', newTheme);
+            updateThemeIcon(newTheme);
+        });
+    }
+
+    function updateThemeIcon(theme) {
+        if (!themeIcon) return;
+        themeIcon.className = theme === 'light'
+            ? 'fas fa-moon'
+            : 'fas fa-sun';
+    }
 });
 
-function updateThemeIcon(theme) {
-    themeIcon.className = theme === 'light' ? 'fas fa-moon' : 'fas fa-sun';
-}
 
 // Calculate circle circumference
 const radius = 16;
