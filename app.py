@@ -1,5 +1,5 @@
 import os
-from flask import Flask, request, jsonify, render_template
+from flask import Flask, request, jsonify, render_template, redirect, url_for, session, flash
 import numpy as np
 import pandas as pd
 import tensorflow as tf
@@ -7,6 +7,8 @@ import tensorflow_hub as hub
 from PIL import Image
 import io
 import base64
+from flask_sqlalchemy import SQLAlchemy
+from werkzeug.security import generate_password_hash, check_password_hash
 
 # === CONFIG === #
 BASE_DIR = os.path.abspath(os.path.dirname(__file__))
@@ -16,6 +18,22 @@ MODEL_URL = "https://tfhub.dev/google/imagenet/mobilenet_v2_130_224/classificati
 IMG_SIZE = 224
 
 app = Flask(__name__)
+
+# === AUTH CONFIG (ADDED ONLY) === #
+app.secret_key = "super_secret_key_change_this"
+app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///" + os.path.join(BASE_DIR, "users.db")
+app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
+db = SQLAlchemy(app)
+
+# === USER MODEL (ADDED ONLY) === #
+class User(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    username = db.Column(db.String(120), nullable=False)
+    email = db.Column(db.String(120), unique=True, nullable=False)
+    password = db.Column(db.String(200), nullable=False)
+
+with app.app_context():
+    db.create_all()
 
 # === LOAD LABELS === #
 try:
@@ -70,7 +88,78 @@ def home():
 
 @app.route("/index")
 def index():
+    if "user_id" not in session:
+        flash("Please login to continue", "error")
+        return redirect(url_for("home"))
     return render_template("index.html")
+
+
+@app.route("/about")
+def about():
+    return render_template("about.html")
+
+@app.route("/contact")
+def contact():
+    return render_template("contact.html")
+
+# === SIGNUP ROUTE (UPDATED ONLY) === #
+@app.route("/signup", methods=["GET", "POST"])
+def signup():
+    if request.method == "POST":
+        username = request.form.get("username")
+        email = request.form.get("email")
+        password = request.form.get("password")
+
+        existing_user = User.query.filter_by(email=email).first()
+        if existing_user:
+            flash("Email already registered" , "error")
+            return redirect(url_for("signup"))
+
+        hashed_password = generate_password_hash(password)
+
+        new_user = User(
+            username=username,
+            email=email,
+            password=hashed_password
+        )
+
+        db.session.add(new_user)
+        db.session.commit()
+
+        session["user_id"] = new_user.id
+        session["username"] = new_user.username
+
+        flash("Account created successfully!", "success")
+        return redirect(url_for("home"))
+
+
+    return render_template("signup.html")
+
+# === LOGIN ROUTE (UPDATED ONLY) === #
+@app.route("/login", methods=["GET", "POST"])
+def login():
+    if request.method == "POST":
+        email = request.form.get("email")
+        password = request.form.get("password")
+
+        user = User.query.filter_by(email=email).first()
+
+        if user and check_password_hash(user.password, password):
+            session["user_id"] = user.id
+            session["username"] = user.username
+            return redirect(url_for("home"))
+        else:
+            flash("Invalid email or password" , "error")
+            return redirect(url_for("login"))
+
+    return render_template("login.html")
+
+# === LOGOUT ROUTE (ADDED ONLY) === #
+@app.route("/logout")
+def logout():
+    session.clear()
+    flash("Logged out successfully", "success")
+    return redirect(url_for("home"))
 
 @app.route('/predict', methods=['POST'])
 def predict():
@@ -106,8 +195,8 @@ def predict():
     except Exception as e:
         return jsonify({'error': f'Server error: {str(e)}'}), 500
 
+
 # === RUN APP === #
 if __name__ == '__main__':
     port = int(os.environ.get('PORT', 5000))
     app.run(host='0.0.0.0', port=port)
- 

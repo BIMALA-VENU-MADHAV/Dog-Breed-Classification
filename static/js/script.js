@@ -73,38 +73,6 @@ clearHistoryBtn.addEventListener('click', () => {
     }
 });
 
-// Theme switcher
-// Theme switcher (shared across pages)
-document.addEventListener('DOMContentLoaded', () => {
-    const themeToggle = document.getElementById('theme-toggle');
-    const html = document.documentElement;
-    const themeIcon = themeToggle?.querySelector('i');
-
-    // Apply saved theme on load
-    const savedTheme = localStorage.getItem('theme') || 'light';
-    html.dataset.theme = savedTheme;
-
-    if (themeIcon) {
-        updateThemeIcon(savedTheme);
-    }
-
-    // Toggle handler
-    if (themeToggle) {
-        themeToggle.addEventListener('click', () => {
-            const newTheme = html.dataset.theme === 'light' ? 'dark' : 'light';
-            html.dataset.theme = newTheme;
-            localStorage.setItem('theme', newTheme);
-            updateThemeIcon(newTheme);
-        });
-    }
-
-    function updateThemeIcon(theme) {
-        if (!themeIcon) return;
-        themeIcon.className = theme === 'light'
-            ? 'fas fa-moon'
-            : 'fas fa-sun';
-    }
-});
 
 
 // Calculate circle circumference

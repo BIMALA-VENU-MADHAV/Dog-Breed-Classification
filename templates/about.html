@@ -5,7 +5,7 @@
     <meta charset="UTF-8" />
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Dog Breed Classifier</title>
+    <title>About | Dog Breed Classifier</title>
 
     <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}" />
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -24,7 +24,7 @@
 
             <ul class="nav-menu" id="navMenu">
                 <li><a href="/" class="nav-link">Home</a></li>
-                <li><a href="/about" class="nav-link">About</a></li>
+                <li><a href="/about" class="nav-link active">About</a></li>
                 <li><a href="/contact" class="nav-link">Contact</a></li>
 
                 {% if session.get("user_id") %}
@@ -45,58 +45,50 @@
             </ul>
         </div>
     </nav>
-    <br />
-    <br />
-    <br />
 
-    <div class="paws-bg">
-        <span>🐾</span><span>🐾</span><span>🐾</span>
-        <span>🐾</span><span>🐾</span><span>🐾</span>
-    </div>
+    <section class="about-section">
+        <div class="about-container glass">
 
-    
-    <section class="hero">
-         
-        <div class="hero-card glass">
-            {% with messages = get_flashed_messages(with_categories=true) %}
-            {% if messages %}
-            {% for category, message in messages %}
-            <div class="flash-message {{ category }}">
-                {{ message }}
-            </div>
-            {% endfor %}
-            {% endif %}
-            {% endwith %}
+            <h1 class="about-title">About This Project</h1>
 
-            <h1 class="hero-title">
-                <span id="typewriter"></span>
-            </h1>
-
-            <p class="hero-subtitle">
-                Upload a dog image and instantly discover its breed using AI
+            <p class="about-text">
+                Dog Breed Classifier is an AI-powered web application that identifies dog breeds from uploaded images.
+                It uses a deep learning model built with TensorFlow and MobileNetV2 to analyze images and predict
+                the most likely breed with confidence score.
             </p>
 
-            <a href="{{ url_for('index') }}" class="hero-btn ripple">
-                Click here
-            </a>
+            <div class="about-grid">
 
+                <div class="about-card">
+                    <i class="fas fa-brain"></i>
+                    <h3>AI Powered</h3>
+                    <p>
+                        Built using a pretrained MobileNetV2 model and fine-tuned for dog breed classification.
+                    </p>
+                </div>
+
+                <div class="about-card">
+                    <i class="fas fa-image"></i>
+                    <h3>Image Recognition</h3>
+                    <p>
+                        Upload any dog image and get instant predictions powered by deep learning.
+                    </p>
+                </div>
+
+                <div class="about-card">
+                    <i class="fas fa-bolt"></i>
+                    <h3>Fast & Accurate</h3>
+                    <p>
+                        Optimized for performance to deliver quick and reliable breed detection results.
+                    </p>
+                </div>
+
+            </div>
 
         </div>
     </section>
 
     <script>
-        const text = "Dog Breed Classifier 🐕";
-        const el = document.getElementById("typewriter");
-        let i = 0;
-        function typeEffect() {
-            if (i < text.length) {
-                el.innerHTML += text.charAt(i);
-                i++;
-                setTimeout(typeEffect, 80);
-            }
-        }
-        typeEffect();
-
         const toggle = document.getElementById("navToggle");
         const menu = document.getElementById("navMenu");
         toggle.addEventListener("click", () => {
@@ -117,26 +109,6 @@
             dropdown.classList.remove("show");
         });
     </script>
-
-    <script>
-        document.addEventListener("DOMContentLoaded", function () {
-
-            const startBtn = document.getElementById("startBtn");
-            const isLoggedIn = startBtn.dataset.logged === "1";
-
-            startBtn.addEventListener("click", function (e) {
-                if (!isLoggedIn) {
-                    e.preventDefault();
-                    alert("Please login to continue");
-                } else {
-                    window.location.href = "/index";
-                }
-            });
-
-        });
-    </script>
-
-
 
 
 </body>
