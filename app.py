@@ -102,6 +102,7 @@ def about():
 def contact():
     return render_template("contact.html")
 
+
 # === SIGNUP ROUTE (UPDATED ONLY) === #
 @app.route("/signup", methods=["GET", "POST"])
 def signup():
